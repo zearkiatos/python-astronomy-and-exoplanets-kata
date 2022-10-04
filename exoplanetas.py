@@ -12,7 +12,9 @@ def cargar_datos(nombre_archivo:str)->pd.DataFrame:
     Retorno:
         (DataFrame) : El DataFrame con todos los datos contenidos en el archivo
     """
-    pass
+    data = pd.read_csv(nombre_archivo)
+    
+    return data
 
 
 def histograma_descubrimiento(datos:pd.DataFrame)->None:
