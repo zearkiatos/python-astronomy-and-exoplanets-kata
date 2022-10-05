@@ -13,7 +13,7 @@ def cargar_datos(nombre_archivo:str)->pd.DataFrame:
         (DataFrame) : El DataFrame con todos los datos contenidos en el archivo
     """
     data = pd.read_csv(nombre_archivo)
-    
+
     return data
 
 
@@ -23,6 +23,17 @@ def histograma_descubrimiento(datos:pd.DataFrame)->None:
     Parametros:
         datos (DataFrame): el DataFrame con la informacion de los exoplanetas
     """
+    discovery = datos["DESCUBRIMIENTO"]
+    ax = discovery.plot(kind="hist", bins=30, title="Cantidad de planetas descubiertos entre 1988 y 2018")
+
+    ax.set_xlabel("Años", fontsize=9)
+
+    ax.set_ylabel("Cantidad de planetas descubiertos", fontsize=9)
+
+    figure = ax.get_figure()
+
+    figure.savefig('./assets/histogram.png')
+    plt.show()
     pass
 
 def estado_publicacion_por_descubrimiento(datos:pd.DataFrame)->None:
