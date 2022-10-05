@@ -1,3 +1,5 @@
+from dis import disco
+from turtle import title
 import pandas as pd
 import matplotlib.pyplot as plt
 import math as m
@@ -42,6 +44,18 @@ def estado_publicacion_por_descubrimiento(datos:pd.DataFrame)->None:
     Parametros:
         datos (DataFrame): el DataFrame con la informacion de los exoplanetas
     """
+    
+    ax = datos[["DESCUBRIMIENTO", "ESTADO_PUBLICACION"]].boxplot(by="ESTADO_PUBLICACION", figsize=(9,30))
+
+    ax.set_ylabel("Año de descubrimiento")
+
+    ax.set_title("Tipo de publicación vs año de descubrimiento")
+
+    figure = ax.get_figure()
+
+    figure.savefig('./assets/boxplot.png')
+    plt.show()
+
     pass
 
 def deteccion_por_descubrimiento(datos:pd.DataFrame)->None:
