@@ -64,6 +64,18 @@ def deteccion_por_descubrimiento(datos:pd.DataFrame)->None:
     Parametros:
         datos (DataFrame): el DataFrame con la informacion de los exoplanetas
     """
+    ax = datos[["DESCUBRIMIENTO", "TIPO_DETECCION"]].boxplot(by="TIPO_DETECCION", figsize=(9,9))
+
+    ax.set_ylabel("Año de descubrimiento")
+
+    ax.set_title("Tipo de detección vs año de descubrimiento")
+
+    figure = ax.get_figure()
+
+    figure.savefig('./assets/boxplot-tipo-deteccion.png')
+    plt.show()
+
+    pass
     pass
 
 def deteccion_y_descubrimiento(datos:pd.DataFrame,anho:int)->None:
