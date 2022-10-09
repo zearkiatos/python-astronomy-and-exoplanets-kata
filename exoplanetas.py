@@ -113,6 +113,13 @@ def deteccion_y_descubrimiento(datos: pd.DataFrame, anho: int) -> None:
 
     pass
 
+def fix_nan(nan:any)->int:
+    result = nan
+    if (np.isnan(nan)):
+        result = 0
+    
+    return result
+
 
 def cantidad_y_tipo_deteccion(datos: pd.DataFrame) -> None:
     """ Calcula y despliega un diagrama de lineas donde aparece una linea por
@@ -121,6 +128,57 @@ def cantidad_y_tipo_deteccion(datos: pd.DataFrame) -> None:
     Parametros:
         datos (DataFrame): el DataFrame con la informacion de los exoplanetas
     """
+    dictionaries = datos.to_dict('records')
+    data_reordered = {}
+
+    for dictionary in dictionaries:
+        if (not dictionary['TIPO_DETECCION'] in list(data_reordered)):
+            data_reordered[dictionary['TIPO_DETECCION']] = {}
+            data_reordered[dictionary['TIPO_DETECCION']
+                           ][dictionary['DESCUBRIMIENTO']] = 1
+        else:
+            if (not dictionary['DESCUBRIMIENTO'] in list(data_reordered[dictionary['TIPO_DETECCION']])):
+                    data_reordered[dictionary['TIPO_DETECCION']
+                           ][int(dictionary['DESCUBRIMIENTO'])] = 1
+            else:
+                data_reordered[dictionary['TIPO_DETECCION']
+                            ][int(dictionary['DESCUBRIMIENTO'])] += 1
+
+    for data in data_reordered:
+        data_reordered[data] =  pd.Series(data_reordered[data])
+
+    dataframe_dictionary = pd.DataFrame(data_reordered)
+
+    for data in data_reordered:
+        dataframe_dictionary[data] = dataframe_dictionary[data].apply(fix_nan)
+        dataframe_dictionary[data] = dataframe_dictionary[data].apply(lambda x: int(x))
+
+    print(dataframe_dictionary)
+
+    plt.plot(dataframe_dictionary)
+    plt.title("Cantidad de planetas descubiertos según el tipo de detección")
+    plt.xlabel("Año de descubrimiento")
+    plt.ylabel("Cantidad de planetas descubiertos")
+    plt.legend(list(data_reordered))
+
+    # ax = dataframe_dictionary.plot(
+    #     kind="kde", bins=10, title="Cantidad de planetas descubiertos según el tipo de detección")
+
+    # ax.set_xlabel("Año de descubrimiento", fontsize=9)
+
+    # ax.set_ylabel("Cantidad de planetas descubiertos", fontsize=9)
+
+    # figure = ax.get_figure()
+
+    plt.savefig('./assets/histogram-discovery-quantity.png')
+
+    # figure.savefig('./assets/histogram-discovery-quantity.png')
+    plt.show()
+    
+
+
+    print(dataframe_dictionary)
+
     pass
 
 
