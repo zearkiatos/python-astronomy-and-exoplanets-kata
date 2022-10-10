@@ -1,0 +1,20 @@
+name: Python CI
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    environment: 
+      name: staging
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10' 
+    - name: Generate build number
+      run: echo "The build number $GITHUB_RUN_NUMBER 🏗"
+    - name: Build docker 🐳
+      run: docker build . -t=python-astronomy-and-exoplanets-kata:github-build-$GITHUB_RUN_NUMBER
