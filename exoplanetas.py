@@ -195,7 +195,6 @@ def masa_promedio_y_tipo_deteccion(datos: pd.DataFrame) -> None:
     """
     dictionaries = datos.to_dict('records')
     data_reordered = {}
-    masa_average = {}
 
     for dictionary in dictionaries:
         if (not dictionary['TIPO_DETECCION'] in list(data_reordered)):
@@ -228,7 +227,7 @@ def masa_promedio_y_tipo_deteccion(datos: pd.DataFrame) -> None:
     plt.plot(dataframe_dictionary)
     plt.title("Cantidad de planetas descubiertos según el tipo de detección")
     plt.xlabel("Año de descubrimiento")
-    plt.ylabel("Cantidad de planetas descubiertos")
+    plt.ylabel("Masa promedio")
     plt.legend(list(data_reordered))
 
     plt.savefig('./assets/histogram-planet-mass-average.png')
@@ -247,6 +246,22 @@ def masa_planetas_vs_masa_estrellas(datos: pd.DataFrame) -> None:
     Parametros:
         datos (DataFrame): el DataFrame con la informacion de los exoplanetas
     """
+    star_mass = datos["MASA_ESTRELLA"]
+
+    planet_mass = datos["MASA"]
+
+
+    star_mass = star_mass.apply(lambda x: np.log10(x))
+
+    plt.scatter(planet_mass, star_mass)
+    plt.title("Masa de los planetas vs. masa de la estrella más cercana")
+    plt.xlabel("Masa del planeta")
+    plt.ylabel("Masa de la estrella (log)")
+
+    plt.savefig('./assets/scatter-mass-planet-star.png')
+
+    plt.show()
+
     pass
 
 
