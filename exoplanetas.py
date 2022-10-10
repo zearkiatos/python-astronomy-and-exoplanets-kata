@@ -1,11 +1,12 @@
-from cmath import isnan
+from cmath import cos, isnan, sin
 from dis import disco
-from turtle import title
+from turtle import color, title
 import pandas as pd
 import matplotlib.pyplot as plt
 import math as m
 import numpy as np
 import statistics
+import math
 
 plt.rcParams.update({'font.size': 12})
 
@@ -250,7 +251,6 @@ def masa_planetas_vs_masa_estrellas(datos: pd.DataFrame) -> None:
 
     planet_mass = datos["MASA"]
 
-
     star_mass = star_mass.apply(lambda x: np.log10(x))
 
     plt.scatter(planet_mass, star_mass)
@@ -265,6 +265,30 @@ def masa_planetas_vs_masa_estrellas(datos: pd.DataFrame) -> None:
     pass
 
 
+def get_coords(ra: float, dec: float) -> tuple:
+    row = int((99 - abs(sin(ra)*cos(dec)*100)))
+    column = int(abs(cos(ra)*cos(dec)*100)+100)
+
+    return (row, column)
+
+
+def get_color_by_type(detection_type: str) -> tuple:
+    if (detection_type == "Microlensing"):
+        return (0.94, 0.10, 0.10)
+    if (detection_type == "Radial Velocity"):
+        return (0.1, 0.5, 0.94)
+    if (detection_type == "Imaging"):
+        return (0.34, 0.94, 0.1)
+    if (detection_type == "Primary Transit"):
+        return (0.10, 0.94, 0.85)
+    if (detection_type == "Other"):
+        return (0.94, 0.10, 0.85)
+    if (detection_type == "Astrometry"):
+        return (0.94, 0.65, 0.10)
+    if (detection_type == "TTV"):
+        return (1, 1, 1)
+
+
 def graficar_cielo(datos: pd.DataFrame) -> list:
     """ Calcula y despliega una imagen donde aparece un pixel por cada planeta,
         usando colores diferentes que dependen del tipo de detección utilizado
@@ -274,7 +298,39 @@ def graficar_cielo(datos: pd.DataFrame) -> list:
     Retorno:
         Una matriz de pixeles con la representacion del cielo
     """
+    ROWS = 100
+    COLUMNS = 200
+    image = [0]*ROWS
+
+    for row in range(0, ROWS):
+        image[row] = [0]*COLUMNS
+
+    for row in range(0, ROWS):
+        for column in range(0, COLUMNS):
+            image[row][column] = (0, 0, 0)
+
+    data = datos[["TIPO_DETECCION", "RA", "DEC"]]
+
+    for row in data.values.tolist():
+        ra = row[1]
+        dec = row[2]
+        detection_type = row[0]
+        row, column = get_coords(ra, dec)
+        image[row][column] = get_color_by_type(detection_type)
+
+    plt.figure(figsize=(9, 9))
+
+    for i in range(0, ROWS):
+        for j in range(0, COLUMNS):
+            plt.plot(i, j, color=image[i][j])
+
+    plt.savefig('./assets/graph-sky.png')
+
+    plt.show()
+
     pass
+
+    return image
 
 
 def filtrar_imagen_cielo(imagen: list) -> None:
