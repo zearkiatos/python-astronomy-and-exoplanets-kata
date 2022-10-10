@@ -1,9 +1,11 @@
+from cmath import isnan
 from dis import disco
 from turtle import title
 import pandas as pd
 import matplotlib.pyplot as plt
 import math as m
 import numpy as np
+import statistics
 
 plt.rcParams.update({'font.size': 12})
 
@@ -113,11 +115,28 @@ def deteccion_y_descubrimiento(datos: pd.DataFrame, anho: int) -> None:
 
     pass
 
-def fix_nan(nan:any)->int:
+
+def fix_nan(nan) -> int:
     result = nan
     if (np.isnan(nan)):
         result = 0
-    
+
+    return result
+
+
+def quit_nan(nan) -> any:
+    result = nan
+    if type(nan) is list:
+        return nan
+    if (np.isnan(nan)):
+        result = 0
+    return result
+
+
+def average(array) -> any:
+    result = array
+    if type(array) is list:
+        return statistics.mean(array)
     return result
 
 
@@ -138,22 +157,21 @@ def cantidad_y_tipo_deteccion(datos: pd.DataFrame) -> None:
                            ][dictionary['DESCUBRIMIENTO']] = 1
         else:
             if (not dictionary['DESCUBRIMIENTO'] in list(data_reordered[dictionary['TIPO_DETECCION']])):
-                    data_reordered[dictionary['TIPO_DETECCION']
-                           ][int(dictionary['DESCUBRIMIENTO'])] = 1
+                data_reordered[dictionary['TIPO_DETECCION']
+                               ][int(dictionary['DESCUBRIMIENTO'])] = 1
             else:
                 data_reordered[dictionary['TIPO_DETECCION']
-                            ][int(dictionary['DESCUBRIMIENTO'])] += 1
+                               ][int(dictionary['DESCUBRIMIENTO'])] += 1
 
     for data in data_reordered:
-        data_reordered[data] =  pd.Series(data_reordered[data])
+        data_reordered[data] = pd.Series(data_reordered[data])
 
     dataframe_dictionary = pd.DataFrame(data_reordered)
 
     for data in data_reordered:
         dataframe_dictionary[data] = dataframe_dictionary[data].apply(fix_nan)
-        dataframe_dictionary[data] = dataframe_dictionary[data].apply(lambda x: int(x))
-
-    print(dataframe_dictionary)
+        dataframe_dictionary[data] = dataframe_dictionary[data].apply(
+            lambda x: int(x))
 
     plt.plot(dataframe_dictionary)
     plt.title("Cantidad de planetas descubiertos según el tipo de detección")
@@ -161,23 +179,9 @@ def cantidad_y_tipo_deteccion(datos: pd.DataFrame) -> None:
     plt.ylabel("Cantidad de planetas descubiertos")
     plt.legend(list(data_reordered))
 
-    # ax = dataframe_dictionary.plot(
-    #     kind="kde", bins=10, title="Cantidad de planetas descubiertos según el tipo de detección")
-
-    # ax.set_xlabel("Año de descubrimiento", fontsize=9)
-
-    # ax.set_ylabel("Cantidad de planetas descubiertos", fontsize=9)
-
-    # figure = ax.get_figure()
-
     plt.savefig('./assets/histogram-discovery-quantity.png')
 
-    # figure.savefig('./assets/histogram-discovery-quantity.png')
     plt.show()
-    
-
-
-    print(dataframe_dictionary)
 
     pass
 
@@ -189,6 +193,48 @@ def masa_promedio_y_tipo_deteccion(datos: pd.DataFrame) -> None:
     Parametros:
         datos (DataFrame): el DataFrame con la informacion de los exoplanetas
     """
+    dictionaries = datos.to_dict('records')
+    data_reordered = {}
+    masa_average = {}
+
+    for dictionary in dictionaries:
+        if (not dictionary['TIPO_DETECCION'] in list(data_reordered)):
+            data_reordered[dictionary['TIPO_DETECCION']] = {}
+            data_reordered[dictionary['TIPO_DETECCION']
+                           ][dictionary['DESCUBRIMIENTO']] = []
+            data_reordered[dictionary['TIPO_DETECCION']
+                           ][dictionary['DESCUBRIMIENTO']].append(dictionary['MASA'])
+        else:
+            if (not dictionary['DESCUBRIMIENTO'] in list(data_reordered[dictionary['TIPO_DETECCION']])):
+                data_reordered[dictionary['TIPO_DETECCION']
+                               ][dictionary['DESCUBRIMIENTO']] = []
+                data_reordered[dictionary['TIPO_DETECCION']
+                               ][int(dictionary['DESCUBRIMIENTO'])].append(dictionary['MASA'])
+            else:
+                data_reordered[dictionary['TIPO_DETECCION']
+                               ][int(dictionary['DESCUBRIMIENTO'])].append(dictionary['MASA'])
+
+    for data in data_reordered:
+        data_reordered[data] = pd.Series(data_reordered[data])
+
+    dataframe_dictionary = pd.DataFrame(data_reordered)
+
+    for data in dataframe_dictionary:
+        dataframe_dictionary[data] = dataframe_dictionary[data].apply(quit_nan)
+        dataframe_dictionary[data] = dataframe_dictionary[data].apply(average)
+
+    print(dataframe_dictionary)
+
+    plt.plot(dataframe_dictionary)
+    plt.title("Cantidad de planetas descubiertos según el tipo de detección")
+    plt.xlabel("Año de descubrimiento")
+    plt.ylabel("Cantidad de planetas descubiertos")
+    plt.legend(list(data_reordered))
+
+    plt.savefig('./assets/histogram-planet-mass-average.png')
+
+    plt.show()
+
     pass
 
 
